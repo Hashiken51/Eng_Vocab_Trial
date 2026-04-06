@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="ja"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>英単語学習アプリ</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Segoe UI', sans-serif;
+      background: #fff;
+      color: #111;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 18px;
+      border-bottom: 1px solid #efefef;
+    }
+    .header h1 { font-size: 1.1rem; font-weight: 700; letter-spacing: 0.02em; }
+    .btn-admin {
+      background: none;
+      border: 1.5px solid #d1d5db;
+      border-radius: 8px;
+      padding: 6px 13px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: #555;
+    }
+
+    /* ── Progress ── */
+    .progress-bar { height: 4px; background: #f0f0f0; }
+    .progress-fill { height: 100%; background: #22c55e; transition: width 0.35s ease; width: 0%; }
+    .progress-text {
+      text-align: center;
+      padding: 7px 0 0;
+      font-size: 0.78rem;
+      color: #aaa;
+      letter-spacing: 0.03em;
+    }
+
+    /* ── Study Area ── */
+    .study-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 18px 32px;
+      gap: 0;
+    }
+    .study-area.hidden { display: none; }
+
+    /* ── Card ── */
+    .card-wrap {
+      width: 100%;
+      max-width: 420px;
+      perspective: 1200px;
+      margin-bottom: 22px;
+    }
+    .card {
+      width: 100%;
+      height: 280px;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.5s cubic-bezier(.4,0,.2,1);
+      cursor: pointer;
+    }
+    .card.flipped { transform: rotateY(180deg); }
+
+    .card-face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      border-radius: 22px;
+      box-shadow: 0 6px 28px rgba(0,0,0,0.10);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 28px 26px;
+      background: #fff;
+      border: 1.5px solid #e8e8e8;
+    }
+    .card-back-face {
+      transform: rotateY(180deg);
+      justify-content: flex-start;
+      padding-top: 24px;
+      overflow-y: auto;
+    }
+
+    .card-hint {
+      font-size: 0.7rem;
+      color: #c0c0c0;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+    .card-english {
+      font-size: 2.1rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      text-align: center;
+    }
+    .card-pos {
+      font-size: 0.8rem;
+      color: #aaa;
+      margin-top: 6px;
+    }
+    .card-japanese {
+      font-size: 1.45rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 0;
+      width: 100%;
+    }
+    .card-divider {
+      width: 100%;
+      height: 1px;
+      background: #efefef;
+      margin: 16px 0;
+    }
+    .card-example {
+      width: 100%;
+      font-size: 0.88rem;
+      line-height: 1.65;
+      color: #555;
+      text-align: center;
+    }
+    .card-example-ja { color: #999; font-size: 0.8rem; margin-top: 4px; }
+
+    /* ── Flip Button ── */
+    .btn-flip {
+      width: 100%;
+      max-width: 420px;
+      padding: 15px;
+      background: #f4f4f4;
+      border: none;
+      border-radius: 14px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: #444;
+      margin-bottom: 14px;
+      transition: background 0.15s;
+    }
+    .btn-flip:active { background: #e8e8e8; }
+
+    /* ── Answer Buttons ── */
+    .btn-row {
+      display: none;
+      gap: 14px;
+      width: 100%;
+      max-width: 420px;
+      margin-bottom: 14px;
+    }
+    .btn-row.visible { display: flex; }
+    .btn {
+      flex: 1;
+      padding: 17px 10px;
+      border: none;
+      border-radius: 15px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.1s, filter 0.1s;
+      letter-spacing: 0.02em;
+    }
+    .btn:active { transform: scale(0.96); filter: brightness(0.92); }
+    .btn-remembered { background: #22c55e; color: #fff; }
+    .btn-notyet    { background: #ef4444; color: #fff; }
+
+    /* ── Interval Info ── */
+    .interval-info {
+      font-size: 0.75rem;
+      color: #bbb;
+      text-align: center;
+      min-height: 18px;
+    }
+
+    /* ── Completed Screen ── */
+    .completed-screen {
+      display: none;
+      flex: 1;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px;
+      text-align: center;
+      gap: 0;
+    }
+    .completed-screen.active { display: flex; }
+    .completed-icon { font-size: 3.8rem; margin-bottom: 18px; }
+    .completed-title { font-size: 1.45rem; font-weight: 700; margin-bottom: 10px; }
+    .completed-stats {
+      color: #666;
+      font-size: 0.9rem;
+      line-height: 1.8;
+      margin-bottom: 28px;
+      background: #f9f9f9;
+      border-radius: 14px;
+      padding: 14px 22px;
+      width: 100%;
+      max-width: 340px;
+    }
+    .completed-stats span { font-weight: 700; color: #111; }
+    .btn-review-notyet {
+      padding: 14px 28px;
+      border: 2px solid #ef4444;
+      background: transparent;
+      color: #ef4444;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-bottom: 10px;
+      width: 100%;
+      max-width: 340px;
+    }
+    .btn-restart {
+      padding: 14px 28px;
+      border: 2px solid #ddd;
+      background: transparent;
+      color: #888;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      max-width: 340px;
+    }
+
+    /* ── Admin Modal (bottom sheet) ── */
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 200;
+    }
+    .overlay.active { display: block; }
+
+    .modal {
+      display: none;
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: #fff;
+      border-radius: 22px 22px 0 0;
+      padding: 20px 18px 36px;
+      max-height: 92vh;
+      overflow-y: auto;
+      z-index: 201;
+      box-shadow: 0 -4px 30px rgba(0,0,0,0.12);
+    }
+    .modal.active { display: block; }
+
+    .modal-drag { width: 36px; height: 4px; background: #ddd; border-radius: 99px; margin: 0 auto 18px; }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+    .modal-title { font-size: 1rem; font-weight: 700; }
+    .btn-close {
+      background: #f2f2f2;
+      border: none;
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      font-size: 0.9rem;
+      cursor: pointer;
+      color: #555;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ── Form ── */
+    .form-section { margin-bottom: 22px; }
+    .form-section-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #888;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .form-group { margin-bottom: 10px; }
+    .form-label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #666;
+      margin-bottom: 4px;
+    }
+    .form-input {
+      width: 100%;
+      padding: 11px 13px;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+      color: #111;
+    }
+    .form-input:focus { border-color: #22c55e; }
+    .btn-add-word {
+      width: 100%;
+      padding: 14px;
+      background: #22c55e;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 2px;
+    }
+    .btn-add-word:active { filter: brightness(0.9); }
+
+    /* ── Word List ── */
+    .list-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .list-title { font-size: 0.85rem; font-weight: 700; color: #333; }
+    .btn-reset-progress {
+      background: none;
+      border: none;
+      font-size: 0.75rem;
+      color: #ef4444;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .word-list { display: flex; flex-direction: column; gap: 7px; }
+    .word-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 13px;
+      background: #f9fafb;
+      border-radius: 11px;
+    }
+    .word-item-body { flex: 1; min-width: 0; }
+    .word-item-en { font-size: 0.9rem; font-weight: 700; }
+    .word-item-ja { font-size: 0.78rem; color: #777; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .word-badge {
+      font-size: 0.68rem;
+      padding: 3px 8px;
+      border-radius: 99px;
+      white-space: nowrap;
+      font-weight: 600;
+    }
+    .badge-new     { background: #eff6ff; color: #3b82f6; }
+    .badge-notyet  { background: #fef2f2; color: #ef4444; }
+    .badge-learned { background: #f0fdf4; color: #16a34a; }
+    .btn-del {
+      background: none;
+      border: none;
+      color: #d1d5db;
+      font-size: 1rem;
+      cursor: pointer;
+      padding: 4px;
+      flex-shrink: 0;
+    }
+    .btn-del:hover { color: #ef4444; }
+
+    /* ── Export Button ── */
+    .btn-export {
+      width: 100%;
+      padding: 13px;
+      background: #f0fdf4;
+      border: 1.5px solid #86efac;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #16a34a;
+      cursor: pointer;
+      margin-top: 16px;
+      transition: background 0.15s;
+    }
+    .btn-export:hover { background: #dcfce7; }
+    .btn-export:disabled { opacity: 0.5; cursor: default; }
+
+    /* ── API Key Section ── */
+    .apikey-section {
+      margin-bottom: 20px;
+      padding: 14px;
+      background: #f8faff;
+      border: 1.5px solid #e0e7ff;
+      border-radius: 12px;
+    }
+    .apikey-section-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #6366f1;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .apikey-desc {
+      font-size: 0.75rem;
+      color: #888;
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+    .apikey-row {
+      display: flex;
+      gap: 8px;
+    }
+    .apikey-row .form-input {
+      flex: 1;
+      font-size: 0.85rem;
+      padding: 9px 11px;
+    }
+    .btn-save-key {
+      padding: 9px 16px;
+      background: #6366f1;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .apikey-status {
+      font-size: 0.72rem;
+      margin-top: 6px;
+      color: #888;
+    }
+    .apikey-status.ok { color: #16a34a; }
+
+    /* ── Auto-generate button ── */
+    .btn-generate {
+      width: 100%;
+      padding: 11px;
+      background: #f0f0ff;
+      border: 1.5px solid #c7d2fe;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #4f46e5;
+      cursor: pointer;
+      margin: 2px 0 10px;
+      transition: background 0.15s;
+    }
+    .btn-generate:hover { background: #e0e7ff; }
+    .btn-generate:disabled { opacity: 0.5; cursor: default; }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(60px);
+      background: #111;
+      color: #fff;
+      padding: 10px 22px;
+      border-radius: 99px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      z-index: 300;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <h1>英単語学習</h1>
+  <button class="btn-admin" onclick="openAdmin()">単語を管理</button>
+</div>
+
+<!-- Progress -->
+<div class="progress-bar">
+  <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+</div>
+<div class="progress-text" id="progressText">0 / 10 枚</div>
+
+<!-- Study Area -->
+<div class="study-area" id="studyArea">
+  <div class="card-wrap">
+    <div class="card" id="card" onclick="flipCard()">
+
+      <!-- Front -->
+      <div class="card-face">
+        <div class="card-hint">タップして意味を確認</div>
+        <div class="card-english" id="cardEnglish">later</div>
+        <div class="card-pos" id="cardPos"></div>
+      </div>
+
+      <!-- Back -->
+      <div class="card-face card-back-face">
+        <div class="card-hint">意味と例文</div>
+        <div class="card-japanese" id="cardJapanese">あとで</div>
+        <div class="card-divider" id="exampleDivider" style="display: block;"></div>
+        <div class="card-example">
+          <div id="cardExampleEn">I will meet you later.</div>
+          <div class="card-example-ja" id="cardExampleJa">あとで会いましょう。</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <button class="btn-flip" id="btnFlip" onclick="flipCard()" style="display: block;">意味を見る ▼</button>
+
+  <div class="btn-row" id="btnRow">
+    <button class="btn btn-notyet" onclick="markNotYet()">まだ 😓</button>
+    <button class="btn btn-remembered" onclick="markRemembered()">覚えた ✓</button>
+  </div>
+
+  <div class="interval-info" id="intervalInfo"></div>
+</div>
+
+<!-- Completed Screen -->
+<div class="completed-screen" id="completedScreen">
+  <div class="completed-icon">🎉</div>
+  <div class="completed-title">今日の分は完了！</div>
+  <div class="completed-stats" id="completedStats">今回覚えた: <span>0 単語</span><br>習得済み: <span>0 / 0 単語</span><br></div>
+  <button class="btn-review-notyet" id="btnReviewNotYet" onclick="reviewNotYet()" style="display: none;">「まだ」の単語だけ復習する</button>
+  <button class="btn-restart" onclick="initQueue()">最初からやり直す</button>
+</div>
+
+<!-- Admin Overlay -->
+<div class="overlay" id="overlay" onclick="closeAdmin()"></div>
+
+<!-- Admin Modal -->
+<div class="modal" id="adminModal" onclick="event.stopPropagation()">
+  <div class="modal-drag"></div>
+  <div class="modal-header">
+    <div class="modal-title">単語の管理</div>
+    <button class="btn-close" onclick="closeAdmin()">✕</button>
+  </div>
+
+  <!-- API Key -->
+  <div class="apikey-section">
+    <div class="apikey-section-title">Groq API キー（無料）</div>
+    <div class="apikey-desc">例文の自動生成に使います。完全無料・カード登録不要。取得先: console.groq.com</div>
+    <div class="apikey-row">
+      <input class="form-input" id="inApiKey" type="password" placeholder="gsk_..." autocomplete="off">
+      <button class="btn-save-key" onclick="saveApiKey()">保存</button>
+    </div>
+    <div class="apikey-status ok" id="apikeyStatus">✓ APIキーが設定されています</div>
+    <button class="btn-generate" id="btnTestKey" style="margin-top:8px;font-size:0.8rem;padding:8px;" onclick="testApiKey()">接続テスト ▶</button>
+  </div>
+
+  <!-- Add Form -->
+  <div class="form-section">
+    <div class="form-section-title">単語を追加</div>
+    <div class="form-group">
+      <label class="form-label">英単語 *</label>
+      <input class="form-input" id="inEn" type="text" placeholder="例: eloquent" autocomplete="off">
+    </div>
+    <div class="form-group">
+      <label class="form-label">日本語訳 *</label>
+      <input class="form-input" id="inJa" type="text" placeholder="例: 雄弁な、流暢な" autocomplete="off">
+    </div>
+    <button class="btn-generate" id="btnGenerate" onclick="generateExample()">例文を自動生成 ✨</button>
+    <div class="form-group">
+      <label class="form-label">例文（英語）</label>
+      <input class="form-input" id="inExEn" type="text" placeholder="例: She gave an eloquent speech." autocomplete="off">
+    </div>
+    <div class="form-group">
+      <label class="form-label">例文（日本語訳）</label>
+      <input class="form-input" id="inExJa" type="text" placeholder="例: 彼女は雄弁なスピーチをした。" autocomplete="off">
+    </div>
+    <button class="btn-add-word" onclick="addWord()">追加する ＋</button>
+  </div>
+
+  <!-- Word List -->
+  <div class="list-header">
+    <div class="list-title" id="listTitle">登録済み単語（10件）</div>
+    <button class="btn-reset-progress" onclick="resetProgress()">進捗をリセット</button>
+  </div>
+  <div class="word-list" id="wordList">
+      <div class="word-item">
+        <div class="word-item-body">
+          <div class="word-item-en">abroad</div>
+          <div class="word-item-ja">外国に</div>
+        </div>
+        <span class="word-badge badge-new">未学習</span>
+        <button class="btn-del" onclick="deleteWord(1775303289043)">✕</button>
+      </div>
+      <div class="word-item">
+        <div class="word-item-body">
+          <div class="word-item-en">almost</div>
+          <div class="word-item-ja">ほとんど</div>
+        </div>
+        <span class="word-badge badge-new">未学習</span>
+        <button class="btn-del" onclick="deleteWord(1775303202317)">✕</button>
+      </div>
+      <div class="word-item">
+        <div class="word-item-body">
+          <div class="word-item-en">century</div>
+          <div class="word-item-ja">世紀</div>
+        </div>
+        <span class="word-badge badge-new">未学習</span>
+        <button class="btn-del" onclick="deleteWord(1775303241533)">✕</button>
+      </div>
+      <div class="word-item">
+        <div class="word-item-body">
+          <div class="word-item-en">downstairs</div>
+          <div class="word-item-ja">下の階に</div>
+        </div>
+        <span class="word-badge badge-new">未学習</span>
+        <button class="btn-del" onclick="deleteWord(1775303229800)">✕</button>
+      </div>
+      <div class="word-item">
+        <div class="word-item-body">
+          <div class="word-item-en">exactly</div>
+          <div class="word-item-ja">正確に・ちょうど</div>
+        </div>
+        <span class="word-badge badge-new">未学習</span>
+        <button class="btn-del" onclick="deleteWord(1775303275786)">✕</button>
+      </div>
+      <div class="word-item">
+        <div class="word-item-body">
+          <div class="word-item-en">later</div>
+          <div class="word-item-ja">あとで</div>
+        </div>
+        <span class="word-badge badge-new">未学習</span>
+        <button class="btn-del" onclick="deleteWord(1775303300347)">✕</button>
+      </div>
+      <div class="word-item">
+        <div class="word-item-body">
+          <div class="word-item-en">opinion</div>
+          <div class="word-item-ja">意見</div>
+        </div>
+        <span class="word-badge badge-new">未学習</span>
+        <button class="btn-del" onclick="deleteWord(1775303340263)">✕</button>
+      </div>
+      <div class="word-item">
+        <div class="word-item-body">
+          <div class="word-item-en">repair</div>
+          <div class="word-item-ja">修理する</div>
+        </div>
+        <span class="word-badge badge-new">未学習</span>
+        <button class="btn-del" onclick="deleteWord(1775303315047)">✕</button>
+      </div>
+      <div class="word-item">
+        <div class="word-item-body">
+          <div class="word-item-en">terrible</div>
+          <div class="word-item-ja">ひどい</div>
+        </div>
+        <span class="word-badge badge-new">未学習</span>
+        <button class="btn-del" onclick="deleteWord(1775303357647)">✕</button>
+      </div>
+      <div class="word-item">
+        <div class="word-item-body">
+          <div class="word-item-en">upstairs</div>
+          <div class="word-item-ja">上の階に</div>
+        </div>
+        <span class="word-badge badge-new">未学習</span>
+        <button class="btn-del" onclick="deleteWord(1775303215400)">✕</button>
+      </div></div>
+
+  <button class="btn-export" id="btnExport" onclick="exportHtml()">HTMLをエクスポート ↓</button>
+</div>
+
+<!-- Word data injected at export time; read on load to populate DEFAULT_WORDS -->
+<script id="vocab-words-export" type="application/json">[{"english":"almost","japanese":"ほとんど","exampleEn":"I am almost ready to go.","exampleJa":"出発する準備がほとんどできた。"},{"english":"upstairs","japanese":"上の階に","exampleEn":"My room is upstairs.","exampleJa":"私の部屋は上の階にあります。"},{"english":"downstairs","japanese":"下の階に","exampleEn":"Let's go downstairs to eat breakfast.","exampleJa":"朝食を食べるために下の階に行きましょう。"},{"english":"century","japanese":"世紀","exampleEn":"The city has been an important place for a century.","exampleJa":"その街は100年以上、重要な場所だった。"},{"english":"exactly","japanese":"正確に・ちょうど","exampleEn":"I arrived exactly at 3 o'clock.","exampleJa":"私はちょうど3時に着きました。"},{"english":"abroad","japanese":"外国に","exampleEn":"My sister is studying abroad in the United States.","exampleJa":"私の姉はアメリカで留学しています。"},{"english":"later","japanese":"あとで","exampleEn":"I will meet you later.","exampleJa":"あとで会いましょう。"},{"english":"repair","japanese":"修理する","exampleEn":"Please repair my bike.","exampleJa":"私の自転車を修理してください。"},{"english":"opinion","japanese":"意見","exampleEn":"I have a different opinion about the movie.","exampleJa":"私はその映画について別の意見を持っています。"},{"english":"terrible","japanese":"ひどい","exampleEn":"The movie was terrible.","exampleJa":"あの映画はひどかった。"}]</script>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════
+//  CONSTANTS & DATA
+// ═══════════════════════════════════════════════
+
+// Spaced repetition intervals (days) after each "覚えた"
+const SRS_INTERVALS = [1, 3, 7, 14, 30, 60, 120];
+
+const DEFAULT_WORDS = [];
+
+// ═══════════════════════════════════════════════
+//  STORAGE
+// ═══════════════════════════════════════════════
+
+function getDefaultWords() {
+  // If this file was exported, the export script tag holds the embedded word list
+  try {
+    const el = document.getElementById('vocab-words-export');
+    if (el && el.textContent.trim()) return JSON.parse(el.textContent);
+  } catch (e) {}
+  return DEFAULT_WORDS;
+}
+
+function loadData() {
+  const defaults = getDefaultWords();
+  try {
+    const raw = localStorage.getItem('vocabApp_v4');
+    if (raw) {
+      const stored = JSON.parse(raw);
+      // Merge: add words in defaults that are not yet in localStorage
+      const known = new Set(stored.words.map(w => w.english.toLowerCase()));
+      const newWords = defaults
+        .filter(w => !known.has(w.english.toLowerCase()))
+        .map((w, i) => ({ id: Date.now() + i, ...w, reps: 0, nextReview: null }));
+      if (newWords.length > 0) {
+        stored.words.push(...newWords);
+        localStorage.setItem('vocabApp_v4', JSON.stringify(stored));
+      }
+      return stored;
+    }
+  } catch (e) {}
+  return {
+    words: defaults.map((w, i) => ({
+      id: 1000 + i,
+      ...w,
+      reps: 0,
+      nextReview: null
+    }))
+  };
+}
+
+function save() {
+  localStorage.setItem('vocabApp_v4', JSON.stringify(appData));
+}
+
+let appData = loadData();
+
+// ═══════════════════════════════════════════════
+//  QUEUE STATE
+// ═══════════════════════════════════════════════
+
+let queue = [];
+let queueIndex = 0;
+let initialLen = 0;   // for progress bar (doesn't grow with re-adds)
+let reviewedCount = 0; // "覚えた" pressed this session
+
+function getDueWords() {
+  const now = new Date();
+  return appData.words.filter(w => {
+    if (!w.nextReview) return true;
+    return new Date(w.nextReview) <= now;
+  });
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+}
+
+function initQueue() {
+  queue = getDueWords();
+  shuffle(queue);
+  queueIndex = 0;
+  initialLen = queue.length;
+  reviewedCount = 0;
+  updateProgress();
+  if (queue.length === 0) {
+    showCompleted();
+  } else {
+    showStudyArea();
+    renderCard();
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  CARD RENDERING
+// ═══════════════════════════════════════════════
+
+let flipped = false;
+
+function renderCard() {
+  const word = queue[queueIndex];
+  document.getElementById('cardEnglish').textContent = word.english;
+  document.getElementById('cardJapanese').textContent = word.japanese;
+
+  const hasExample = word.exampleEn || word.exampleJa;
+  document.getElementById('exampleDivider').style.display = hasExample ? 'block' : 'none';
+  document.getElementById('cardExampleEn').textContent = word.exampleEn || '';
+  document.getElementById('cardExampleJa').textContent = word.exampleJa || '';
+
+  // Reset to front
+  flipped = false;
+  document.getElementById('card').classList.remove('flipped');
+  document.getElementById('btnFlip').style.display = 'block';
+  document.getElementById('btnRow').classList.remove('visible');
+  document.getElementById('intervalInfo').textContent = '';
+}
+
+function flipCard() {
+  flipped = !flipped;
+  document.getElementById('card').classList.toggle('flipped', flipped);
+  if (flipped) {
+    document.getElementById('btnFlip').style.display = 'none';
+    document.getElementById('btnRow').classList.add('visible');
+    showIntervalInfo();
+  } else {
+    document.getElementById('btnFlip').style.display = 'block';
+    document.getElementById('btnRow').classList.remove('visible');
+    document.getElementById('intervalInfo').textContent = '';
+  }
+}
+
+function showIntervalInfo() {
+  const word = queue[queueIndex];
+  const nextReps = (word.reps || 0) + 1;
+  const days = SRS_INTERVALS[Math.min(nextReps - 1, SRS_INTERVALS.length - 1)];
+  document.getElementById('intervalInfo').textContent =
+    `「覚えた」→ ${days}日後に再出題`;
+}
+
+// ═══════════════════════════════════════════════
+//  ANSWER HANDLING
+// ═══════════════════════════════════════════════
+
+function markRemembered() {
+  const word = queue[queueIndex];
+  const stored = appData.words.find(w => w.id === word.id);
+  stored.reps = (stored.reps || 0) + 1;
+  const days = SRS_INTERVALS[Math.min(stored.reps - 1, SRS_INTERVALS.length - 1)];
+  const next = new Date();
+  next.setDate(next.getDate() + days);
+  next.setHours(0, 0, 0, 0);
+  stored.nextReview = next.toISOString();
+  save();
+  reviewedCount++;
+  advance();
+}
+
+function markNotYet() {
+  const word = queue[queueIndex];
+  const stored = appData.words.find(w => w.id === word.id);
+  stored.reps = 0;
+  stored.nextReview = new Date().toISOString(); // still due today
+  save();
+  // Push a copy to the end of the queue so it reappears later
+  queue.push({ ...queue[queueIndex] });
+  advance();
+}
+
+function advance() {
+  queueIndex++;
+  updateProgress();
+  if (queueIndex >= queue.length) {
+    showCompleted();
+  } else {
+    renderCard();
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  PROGRESS
+// ═══════════════════════════════════════════════
+
+function updateProgress() {
+  const pct = initialLen > 0
+    ? Math.min(100, Math.round((queueIndex / initialLen) * 100))
+    : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent =
+    initialLen > 0 ? `${Math.min(queueIndex, initialLen)} / ${initialLen} 枚` : '';
+}
+
+// ═══════════════════════════════════════════════
+//  SCREEN SWITCHING
+// ═══════════════════════════════════════════════
+
+function showStudyArea() {
+  document.getElementById('studyArea').classList.remove('hidden');
+  document.getElementById('completedScreen').classList.remove('active');
+}
+
+function showCompleted() {
+  document.getElementById('studyArea').classList.add('hidden');
+  document.getElementById('completedScreen').classList.add('active');
+
+  const total    = appData.words.length;
+  const mastered = appData.words.filter(w => w.reps > 0).length;
+  const notYet   = appData.words.filter(w => w.reps === 0).length;
+
+  // Next upcoming review
+  const upcoming = appData.words
+    .filter(w => w.nextReview && w.reps > 0)
+    .sort((a, b) => new Date(a.nextReview) - new Date(b.nextReview));
+
+  let statsHtml = `今回覚えた: <span>${reviewedCount} 単語</span><br>`;
+  statsHtml += `習得済み: <span>${mastered} / ${total} 単語</span><br>`;
+  if (notYet > 0) {
+    statsHtml += `要復習: <span>${notYet} 単語</span><br>`;
+  }
+  if (upcoming.length > 0) {
+    const d = new Date(upcoming[0].nextReview);
+    statsHtml += `次の復習日: <span>${d.toLocaleDateString('ja-JP', {month:'long', day:'numeric'})}</span>`;
+  }
+  document.getElementById('completedStats').innerHTML = statsHtml;
+
+  // Show "Review not-yet" button only if there are such words
+  const hasNotYet = appData.words.some(w => w.reps === 0 && w.nextReview !== null);
+  document.getElementById('btnReviewNotYet').style.display = hasNotYet ? 'block' : 'none';
+}
+
+function reviewNotYet() {
+  queue = appData.words.filter(w => w.reps === 0 && w.nextReview !== null);
+  if (queue.length === 0) { showToast('復習する単語がありません'); return; }
+  shuffle(queue);
+  queueIndex = 0;
+  initialLen = queue.length;
+  reviewedCount = 0;
+  updateProgress();
+  showStudyArea();
+  renderCard();
+}
+
+// ═══════════════════════════════════════════════
+//  ADMIN PANEL
+// ═══════════════════════════════════════════════
+
+function openAdmin() {
+  document.getElementById('overlay').classList.add('active');
+  document.getElementById('adminModal').classList.add('active');
+  loadApiKeyUI();
+  renderWordList();
+}
+
+function closeAdmin() {
+  document.getElementById('overlay').classList.remove('active');
+  document.getElementById('adminModal').classList.remove('active');
+}
+
+function addWord() {
+  const english   = document.getElementById('inEn').value.trim();
+  const japanese  = document.getElementById('inJa').value.trim();
+  const exampleEn = document.getElementById('inExEn').value.trim();
+  const exampleJa = document.getElementById('inExJa').value.trim();
+
+  if (!english || !japanese) {
+    showToast('英単語と日本語訳は必須です');
+    return;
+  }
+
+  // Duplicate check
+  if (appData.words.some(w => w.english.toLowerCase() === english.toLowerCase())) {
+    showToast('その単語はすでに登録されています');
+    return;
+  }
+
+  appData.words.push({
+    id: Date.now(),
+    english, japanese, exampleEn, exampleJa,
+    reps: 0,
+    nextReview: null
+  });
+  save();
+
+  document.getElementById('inEn').value = '';
+  document.getElementById('inJa').value = '';
+  document.getElementById('inExEn').value = '';
+  document.getElementById('inExJa').value = '';
+
+  renderWordList();
+  showToast(`「${english}」を追加しました`);
+
+  // Re-init queue so new card can appear
+  initQueue();
+}
+
+function deleteWord(id) {
+  const word = appData.words.find(w => w.id === id);
+  if (!word) return;
+  if (!confirm(`「${word.english}」を削除しますか？`)) return;
+  appData.words = appData.words.filter(w => w.id !== id);
+  save();
+  renderWordList();
+  initQueue();
+}
+
+function resetProgress() {
+  if (!confirm('すべての学習進捗をリセットしますか？\n（単語は削除されません）')) return;
+  appData.words.forEach(w => { w.reps = 0; w.nextReview = null; });
+  save();
+  renderWordList();
+  closeAdmin();
+  initQueue();
+  showToast('進捗をリセットしました');
+}
+
+function renderWordList() {
+  const words = [...appData.words].sort((a, b) => a.english.localeCompare(b.english));
+  document.getElementById('listTitle').textContent = `登録済み単語（${words.length}件）`;
+
+  document.getElementById('wordList').innerHTML = words.map(w => {
+    let badge, badgeClass;
+    if (!w.nextReview && w.reps === 0) {
+      badge = '未学習'; badgeClass = 'badge-new';
+    } else if (w.reps === 0) {
+      badge = 'まだ'; badgeClass = 'badge-notyet';
+    } else {
+      const days = SRS_INTERVALS[Math.min(w.reps - 1, SRS_INTERVALS.length - 1)];
+      badge = `${days}日後`; badgeClass = 'badge-learned';
+    }
+    return `
+      <div class="word-item">
+        <div class="word-item-body">
+          <div class="word-item-en">${h(w.english)}</div>
+          <div class="word-item-ja">${h(w.japanese)}</div>
+        </div>
+        <span class="word-badge ${badgeClass}">${badge}</span>
+        <button class="btn-del" onclick="deleteWord(${w.id})">✕</button>
+      </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════
+
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+// ═══════════════════════════════════════════════
+//  UTILS
+// ═══════════════════════════════════════════════
+
+function h(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// ═══════════════════════════════════════════════
+//  API KEY
+// ═══════════════════════════════════════════════
+
+function loadApiKeyUI() {
+  const key = localStorage.getItem('groqApiKey') || '';
+  if (key) {
+    document.getElementById('inApiKey').value = key;
+    document.getElementById('apikeyStatus').textContent = '✓ APIキーが設定されています';
+    document.getElementById('apikeyStatus').className = 'apikey-status ok';
+  } else {
+    document.getElementById('apikeyStatus').textContent = 'APIキーが未設定です（自動生成を使う場合のみ必要）';
+    document.getElementById('apikeyStatus').className = 'apikey-status';
+  }
+}
+
+function saveApiKey() {
+  const key = document.getElementById('inApiKey').value.trim();
+  if (!key) {
+    localStorage.removeItem('groqApiKey');
+    document.getElementById('apikeyStatus').textContent = 'APIキーを削除しました';
+    document.getElementById('apikeyStatus').className = 'apikey-status';
+    return;
+  }
+  localStorage.setItem('groqApiKey', key);
+  document.getElementById('apikeyStatus').textContent = '✓ 保存しました';
+  document.getElementById('apikeyStatus').className = 'apikey-status ok';
+}
+
+// ═══════════════════════════════════════════════
+//  EXAMPLE GENERATION (Gemini API)
+// ═══════════════════════════════════════════════
+
+async function testApiKey() {
+  const apiKey = (document.getElementById('inApiKey').value.trim())
+              || (localStorage.getItem('groqApiKey') || '');
+  if (!apiKey) { showToast('APIキーを入力してください'); return; }
+
+  const btn = document.getElementById('btnTestKey');
+  btn.textContent = 'テスト中...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(
+      'https://api.groq.com/openai/v1/chat/completions',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey.trim()}`
+        },
+        body: JSON.stringify({
+          model: 'llama-3.3-70b-versatile',
+          messages: [{ role: 'user', content: 'Say "OK" in one word.' }],
+          max_tokens: 10
+        })
+      }
+    );
+    const data = await res.json();
+    if (!res.ok) {
+      const code = res.status;
+      const msg  = data.error?.message || `HTTP ${code}`;
+      const typ  = data.error?.type    || '';
+      console.error('[Test Error]', code, typ, msg);
+      document.getElementById('apikeyStatus').textContent = `✗ エラー [${code} ${typ}]: ${msg}`;
+      document.getElementById('apikeyStatus').className = 'apikey-status';
+    } else {
+      console.log('[Test OK]', data);
+      document.getElementById('apikeyStatus').textContent = '✓ 接続成功！APIキーは正常です';
+      document.getElementById('apikeyStatus').className = 'apikey-status ok';
+    }
+  } catch (e) {
+    console.error('[Test exception]', e);
+    document.getElementById('apikeyStatus').textContent = `✗ ネットワークエラー: ${e.message}`;
+    document.getElementById('apikeyStatus').className = 'apikey-status';
+  } finally {
+    btn.textContent = '接続テスト ▶';
+    btn.disabled = false;
+  }
+}
+
+async function generateExample() {
+  const english  = document.getElementById('inEn').value.trim();
+  const japanese = document.getElementById('inJa').value.trim();
+  const apiKey   = localStorage.getItem('groqApiKey') || '';
+
+  if (!english) { showToast('英単語を入力してください'); return; }
+  if (!apiKey)  { showToast('APIキーを設定してください'); return; }
+
+  const btn = document.getElementById('btnGenerate');
+  btn.textContent = '生成中...';
+  btn.disabled = true;
+
+  try {
+    const prompt = `英単語「${english}」${japanese ? `（意味：${japanese}）` : ''}を使った英語の例文を1つ作ってください。
+
+条件：
+- 日本の中学2年生（14歳）がスムーズに理解できる語彙・文法レベル
+- 使う単語は中学1〜2年で習う基本語彙のみ（例外として対象単語「${english}」自体は含めてOK）
+- 文構造はシンプル（SVO、SVC程度）
+- 自然で覚えやすい例文
+
+以下のJSON形式だけで返してください（余分なテキスト不要）：
+{"en":"英語例文","ja":"日本語訳"}`;
+
+    const res = await fetch(
+      'https://api.groq.com/openai/v1/chat/completions',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+          model: 'llama-3.3-70b-versatile',
+          messages: [{ role: 'user', content: prompt }],
+          max_tokens: 256,
+          temperature: 0.7
+        })
+      }
+    );
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      const code = res.status;
+      const msg  = err.error?.message || `HTTP ${code}`;
+      const typ  = err.error?.type    || '';
+      console.error('[Groq API Error]', code, typ, msg, err);
+      throw new Error(`[${code} ${typ}] ${msg}`);
+    }
+
+    const data = await res.json();
+    console.log('[Groq API OK]', data);
+    const raw  = data.choices?.[0]?.message?.content?.trim() || '';
+
+    // Extract JSON robustly (strip markdown code fences if present)
+    const jsonStr = raw.replace(/^```json?\s*/i, '').replace(/```\s*$/, '').trim();
+    const result  = JSON.parse(jsonStr);
+
+    if (result.en) document.getElementById('inExEn').value = result.en;
+    if (result.ja) document.getElementById('inExJa').value = result.ja;
+    showToast('例文を生成しました ✓');
+
+  } catch (e) {
+    console.error('[generateExample error]', e);
+    showToast('失敗: ' + e.message);
+  } finally {
+    btn.textContent = '例文を自動生成 ✨';
+    btn.disabled = false;
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  EXPORT
+// ═══════════════════════════════════════════════
+
+function exportHtml() {
+  const btn = document.getElementById('btnExport');
+  btn.textContent = '生成中...';
+  btn.disabled = true;
+
+  function resetBtn() {
+    btn.textContent = 'HTMLをエクスポート ↓';
+    btn.disabled = false;
+  }
+
+  // Strip SRS progress — exported words start fresh for learners
+  const cleanWords = appData.words.map(({ english, japanese, exampleEn, exampleJa }) => ({
+    english, japanese,
+    exampleEn: exampleEn || '',
+    exampleJa: exampleJa || ''
+  }));
+
+  // Temporarily clean up DOM state so exported file opens cleanly
+  const overlay  = document.getElementById('overlay');
+  const modal    = document.getElementById('adminModal');
+  const toast    = document.getElementById('toast');
+  const exportEl = document.getElementById('vocab-words-export');
+
+  const overlayActive = overlay.classList.contains('active');
+  const modalActive   = modal.classList.contains('active');
+  const toastShow     = toast.classList.contains('show');
+  const toastText     = toast.textContent;
+  const prevExport    = exportEl.textContent;
+
+  overlay.classList.remove('active');
+  modal.classList.remove('active');
+  toast.classList.remove('show');
+  toast.textContent = '';
+  // Reset export button so it doesn't appear stuck in the exported file
+  btn.disabled = false;
+  btn.textContent = 'HTMLをエクスポート ↓';
+  exportEl.textContent = JSON.stringify(cleanWords).replace(/<\//g, '<\\/');
+
+  var html;
+  try {
+    html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+  } catch (e) {
+    console.error('[export] outerHTML failed:', e);
+    showToast('エクスポート失敗: ' + e.message);
+    resetBtn();
+    return;
+  }
+
+  // Restore current session state
+  if (overlayActive) overlay.classList.add('active');
+  if (modalActive)   modal.classList.add('active');
+  if (toastShow)     toast.classList.add('show');
+  toast.textContent = toastText;
+  exportEl.textContent = prevExport;
+
+  // Reset button now (before download) so it's never stuck
+  resetBtn();
+  showToast('HTMLをダウンロードしました ✓');
+
+  // Trigger download asynchronously so current call stack finishes first
+  var blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  var url  = URL.createObjectURL(blob);
+  var a    = document.createElement('a');
+  a.href     = url;
+  a.rel      = 'noopener';
+  a.download = 'index.html';
+  setTimeout(function() {
+    a.dispatchEvent(new MouseEvent('click'));
+    setTimeout(function() { URL.revokeObjectURL(url); }, 40000);
+  }, 0);
+}
+
+// ═══════════════════════════════════════════════
+//  BOOT
+// ═══════════════════════════════════════════════
+initQueue();
+</script>
+
+
+</body></html>
