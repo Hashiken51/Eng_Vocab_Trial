@@ -488,7 +488,7 @@
 <div class="progress-bar">
   <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
 </div>
-<div class="progress-text" id="progressText">0 / 10 枚</div>
+<div class="progress-text" id="progressText">0 / 30 枚</div>
 
 <!-- Study Area -->
 <div class="study-area" id="studyArea">
@@ -498,18 +498,18 @@
       <!-- Front -->
       <div class="card-face">
         <div class="card-hint">タップして意味を確認</div>
-        <div class="card-english" id="cardEnglish">later</div>
+        <div class="card-english" id="cardEnglish">pale</div>
         <div class="card-pos" id="cardPos"></div>
       </div>
 
       <!-- Back -->
       <div class="card-face card-back-face">
         <div class="card-hint">意味と例文</div>
-        <div class="card-japanese" id="cardJapanese">あとで</div>
+        <div class="card-japanese" id="cardJapanese">顔色が悪い</div>
         <div class="card-divider" id="exampleDivider" style="display: block;"></div>
         <div class="card-example">
-          <div id="cardExampleEn">I will meet you later.</div>
-          <div class="card-example-ja" id="cardExampleJa">あとで会いましょう。</div>
+          <div id="cardExampleEn">She looked pale after the fever.</div>
+          <div class="card-example-ja" id="cardExampleJa">彼女は熱を出たあと顔色が悪かった</div>
         </div>
       </div>
 
@@ -583,10 +583,18 @@
 
   <!-- Word List -->
   <div class="list-header">
-    <div class="list-title" id="listTitle">登録済み単語（10件）</div>
+    <div class="list-title" id="listTitle">登録済み単語（30件）</div>
     <button class="btn-reset-progress" onclick="resetProgress()">進捗をリセット</button>
   </div>
   <div class="word-list" id="wordList">
+      <div class="word-item">
+        <div class="word-item-body">
+          <div class="word-item-en">ability</div>
+          <div class="word-item-ja">能力</div>
+        </div>
+        <span class="word-badge badge-new">未学習</span>
+        <button class="btn-del" onclick="deleteWord(1775911597933)">✕</button>
+      </div>
       <div class="word-item">
         <div class="word-item-body">
           <div class="word-item-en">abroad</div>
@@ -605,11 +613,43 @@
       </div>
       <div class="word-item">
         <div class="word-item-body">
+          <div class="word-item-en">among</div>
+          <div class="word-item-ja">〜の間で</div>
+        </div>
+        <span class="word-badge badge-new">未学習</span>
+        <button class="btn-del" onclick="deleteWord(1775911451402)">✕</button>
+      </div>
+      <div class="word-item">
+        <div class="word-item-body">
+          <div class="word-item-en">attend</div>
+          <div class="word-item-ja">出席する</div>
+        </div>
+        <span class="word-badge badge-new">未学習</span>
+        <button class="btn-del" onclick="deleteWord(1775911409587)">✕</button>
+      </div>
+      <div class="word-item">
+        <div class="word-item-body">
           <div class="word-item-en">century</div>
           <div class="word-item-ja">世紀</div>
         </div>
         <span class="word-badge badge-new">未学習</span>
         <button class="btn-del" onclick="deleteWord(1775303241533)">✕</button>
+      </div>
+      <div class="word-item">
+        <div class="word-item-body">
+          <div class="word-item-en">cheer</div>
+          <div class="word-item-ja">応援する</div>
+        </div>
+        <span class="word-badge badge-new">未学習</span>
+        <button class="btn-del" onclick="deleteWord(1775911614166)">✕</button>
+      </div>
+      <div class="word-item">
+        <div class="word-item-body">
+          <div class="word-item-en">discount</div>
+          <div class="word-item-ja">値引き</div>
+        </div>
+        <span class="word-badge badge-new">未学習</span>
+        <button class="btn-del" onclick="deleteWord(1775911364855)">✕</button>
       </div>
       <div class="word-item">
         <div class="word-item-body">
@@ -629,11 +669,51 @@
       </div>
       <div class="word-item">
         <div class="word-item-body">
+          <div class="word-item-en">far</div>
+          <div class="word-item-ja">遠い</div>
+        </div>
+        <span class="word-badge badge-new">未学習</span>
+        <button class="btn-del" onclick="deleteWord(1775911279673)">✕</button>
+      </div>
+      <div class="word-item">
+        <div class="word-item-body">
+          <div class="word-item-en">figure</div>
+          <div class="word-item-ja">人形・形</div>
+        </div>
+        <span class="word-badge badge-new">未学習</span>
+        <button class="btn-del" onclick="deleteWord(1775911567867)">✕</button>
+      </div>
+      <div class="word-item">
+        <div class="word-item-body">
+          <div class="word-item-en">improve</div>
+          <div class="word-item-ja">改良する・改善する</div>
+        </div>
+        <span class="word-badge badge-new">未学習</span>
+        <button class="btn-del" onclick="deleteWord(1775911584967)">✕</button>
+      </div>
+      <div class="word-item">
+        <div class="word-item-body">
           <div class="word-item-en">later</div>
           <div class="word-item-ja">あとで</div>
         </div>
         <span class="word-badge badge-new">未学習</span>
         <button class="btn-del" onclick="deleteWord(1775303300347)">✕</button>
+      </div>
+      <div class="word-item">
+        <div class="word-item-body">
+          <div class="word-item-en">local</div>
+          <div class="word-item-ja">地元の</div>
+        </div>
+        <span class="word-badge badge-new">未学習</span>
+        <button class="btn-del" onclick="deleteWord(1775911623766)">✕</button>
+      </div>
+      <div class="word-item">
+        <div class="word-item-body">
+          <div class="word-item-en">medicine</div>
+          <div class="word-item-ja">薬</div>
+        </div>
+        <span class="word-badge badge-new">未学習</span>
+        <button class="btn-del" onclick="deleteWord(1775911489174)">✕</button>
       </div>
       <div class="word-item">
         <div class="word-item-body">
@@ -645,11 +725,91 @@
       </div>
       <div class="word-item">
         <div class="word-item-body">
+          <div class="word-item-en">pale</div>
+          <div class="word-item-ja">顔色が悪い</div>
+        </div>
+        <span class="word-badge badge-new">未学習</span>
+        <button class="btn-del" onclick="deleteWord(1775911311989)">✕</button>
+      </div>
+      <div class="word-item">
+        <div class="word-item-body">
+          <div class="word-item-en">probably</div>
+          <div class="word-item-ja">多分・おそらく</div>
+        </div>
+        <span class="word-badge badge-new">未学習</span>
+        <button class="btn-del" onclick="deleteWord(1775911330314)">✕</button>
+      </div>
+      <div class="word-item">
+        <div class="word-item-body">
+          <div class="word-item-en">problem</div>
+          <div class="word-item-ja">問題</div>
+        </div>
+        <span class="word-badge badge-new">未学習</span>
+        <button class="btn-del" onclick="deleteWord(1775911291075)">✕</button>
+      </div>
+      <div class="word-item">
+        <div class="word-item-body">
+          <div class="word-item-en">purpose</div>
+          <div class="word-item-ja">目的</div>
+        </div>
+        <span class="word-badge badge-new">未学習</span>
+        <button class="btn-del" onclick="deleteWord(1775911505016)">✕</button>
+      </div>
+      <div class="word-item">
+        <div class="word-item-body">
+          <div class="word-item-en">recommend</div>
+          <div class="word-item-ja">勧める・推奨する</div>
+        </div>
+        <span class="word-badge badge-new">未学習</span>
+        <button class="btn-del" onclick="deleteWord(1775911547095)">✕</button>
+      </div>
+      <div class="word-item">
+        <div class="word-item-body">
           <div class="word-item-en">repair</div>
           <div class="word-item-ja">修理する</div>
         </div>
         <span class="word-badge badge-new">未学習</span>
         <button class="btn-del" onclick="deleteWord(1775303315047)">✕</button>
+      </div>
+      <div class="word-item">
+        <div class="word-item-body">
+          <div class="word-item-en">solve</div>
+          <div class="word-item-ja">解く・解決する</div>
+        </div>
+        <span class="word-badge badge-new">未学習</span>
+        <button class="btn-del" onclick="deleteWord(1775911252547)">✕</button>
+      </div>
+      <div class="word-item">
+        <div class="word-item-body">
+          <div class="word-item-en">someday</div>
+          <div class="word-item-ja">いつか</div>
+        </div>
+        <span class="word-badge badge-new">未学習</span>
+        <button class="btn-del" onclick="deleteWord(1775911380788)">✕</button>
+      </div>
+      <div class="word-item">
+        <div class="word-item-body">
+          <div class="word-item-en">stranger</div>
+          <div class="word-item-ja">見知らぬ人・不慣れな人</div>
+        </div>
+        <span class="word-badge badge-new">未学習</span>
+        <button class="btn-del" onclick="deleteWord(1775911353389)">✕</button>
+      </div>
+      <div class="word-item">
+        <div class="word-item-body">
+          <div class="word-item-en">succeed</div>
+          <div class="word-item-ja">成功する</div>
+        </div>
+        <span class="word-badge badge-new">未学習</span>
+        <button class="btn-del" onclick="deleteWord(1775911395854)">✕</button>
+      </div>
+      <div class="word-item">
+        <div class="word-item-body">
+          <div class="word-item-en">temple</div>
+          <div class="word-item-ja">寺</div>
+        </div>
+        <span class="word-badge badge-new">未学習</span>
+        <button class="btn-del" onclick="deleteWord(1775911474586)">✕</button>
       </div>
       <div class="word-item">
         <div class="word-item-body">
@@ -672,7 +832,7 @@
 </div>
 
 <!-- Word data injected at export time; read on load to populate DEFAULT_WORDS -->
-<script id="vocab-words-export" type="application/json">[{"english":"almost","japanese":"ほとんど","exampleEn":"I am almost ready to go.","exampleJa":"出発する準備がほとんどできた。"},{"english":"upstairs","japanese":"上の階に","exampleEn":"My room is upstairs.","exampleJa":"私の部屋は上の階にあります。"},{"english":"downstairs","japanese":"下の階に","exampleEn":"Let's go downstairs to eat breakfast.","exampleJa":"朝食を食べるために下の階に行きましょう。"},{"english":"century","japanese":"世紀","exampleEn":"The city has been an important place for a century.","exampleJa":"その街は100年以上、重要な場所だった。"},{"english":"exactly","japanese":"正確に・ちょうど","exampleEn":"I arrived exactly at 3 o'clock.","exampleJa":"私はちょうど3時に着きました。"},{"english":"abroad","japanese":"外国に","exampleEn":"My sister is studying abroad in the United States.","exampleJa":"私の姉はアメリカで留学しています。"},{"english":"later","japanese":"あとで","exampleEn":"I will meet you later.","exampleJa":"あとで会いましょう。"},{"english":"repair","japanese":"修理する","exampleEn":"Please repair my bike.","exampleJa":"私の自転車を修理してください。"},{"english":"opinion","japanese":"意見","exampleEn":"I have a different opinion about the movie.","exampleJa":"私はその映画について別の意見を持っています。"},{"english":"terrible","japanese":"ひどい","exampleEn":"The movie was terrible.","exampleJa":"あの映画はひどかった。"}]</script>
+<script id="vocab-words-export" type="application/json">[{"english":"almost","japanese":"ほとんど","exampleEn":"I am almost ready to go.","exampleJa":"出発する準備がほとんどできた。"},{"english":"upstairs","japanese":"上の階に","exampleEn":"My room is upstairs.","exampleJa":"私の部屋は上の階にあります。"},{"english":"downstairs","japanese":"下の階に","exampleEn":"Let's go downstairs to eat breakfast.","exampleJa":"朝食を食べるために下の階に行きましょう。"},{"english":"century","japanese":"世紀","exampleEn":"The city has been an important place for a century.","exampleJa":"その街は100年以上、重要な場所だった。"},{"english":"exactly","japanese":"正確に・ちょうど","exampleEn":"I arrived exactly at 3 o'clock.","exampleJa":"私はちょうど3時に着きました。"},{"english":"abroad","japanese":"外国に","exampleEn":"My sister is studying abroad in the United States.","exampleJa":"私の姉はアメリカで留学しています。"},{"english":"later","japanese":"あとで","exampleEn":"I will meet you later.","exampleJa":"あとで会いましょう。"},{"english":"repair","japanese":"修理する","exampleEn":"Please repair my bike.","exampleJa":"私の自転車を修理してください。"},{"english":"opinion","japanese":"意見","exampleEn":"I have a different opinion about the movie.","exampleJa":"私はその映画について別の意見を持っています。"},{"english":"terrible","japanese":"ひどい","exampleEn":"The movie was terrible.","exampleJa":"あの映画はひどかった。"},{"english":"solve","japanese":"解く・解決する","exampleEn":"I will solve the math problem.","exampleJa":"私は数学の問題を解くつもりです。"},{"english":"far","japanese":"遠い","exampleEn":"The mountain is far from my house.","exampleJa":"その山は私の家から遠い。"},{"english":"problem","japanese":"問題","exampleEn":"I have a problem with my computer.","exampleJa":"私のコンピューターに問題がある。"},{"english":"pale","japanese":"顔色が悪い","exampleEn":"She looked pale after the fever.","exampleJa":"彼女は熱を出たあと顔色が悪かった"},{"english":"probably","japanese":"多分・おそらく","exampleEn":"It will probably rain tomorrow.","exampleJa":"明日はおそらく雨が降るでしょう。"},{"english":"stranger","japanese":"見知らぬ人・不慣れな人","exampleEn":"The stranger smiled at me on the street.","exampleJa":"通りで、見知らぬ人が私に笑顔を向けた。"},{"english":"discount","japanese":"値引き","exampleEn":"I got a discount on my new shoes.","exampleJa":"新しい靴が安く買うことができた。"},{"english":"someday","japanese":"いつか","exampleEn":"I want to be a doctor someday.","exampleJa":"私はいつか医者になりたい。"},{"english":"succeed","japanese":"成功する","exampleEn":"She will succeed if she studies hard.","exampleJa":"彼女は勉強を頑張れば成功することができる。"},{"english":"attend","japanese":"出席する","exampleEn":"I will attend the party tonight.","exampleJa":"私は今夜パーティーに出席するつもりだ。"},{"english":"among","japanese":"〜の間で","exampleEn":"She is the best singer among my friends.","exampleJa":"友達の中で彼女は一番歌がうまい。"},{"english":"temple","japanese":"寺","exampleEn":"I visited a temple in Kyoto.","exampleJa":"私は京都にある寺を訪ねました。"},{"english":"medicine","japanese":"薬","exampleEn":"My mom is a doctor, so she gives me medicine when I am sick.","exampleJa":"私の母は医者なので、病気になった時に私に薬を飲ませてくれる。"},{"english":"purpose","japanese":"目的","exampleEn":"The purpose of this trip is to learn English.","exampleJa":"この旅の目的は英語を学ぶことです。"},{"english":"recommend","japanese":"勧める・推奨する","exampleEn":"I recommend this book to you.","exampleJa":"この本をおすすめする。"},{"english":"figure","japanese":"人形・形","exampleEn":"The artist made a small figure of a cat.","exampleJa":"アーティストは小さな猫の形の物を作った。"},{"english":"improve","japanese":"改良する・改善する","exampleEn":"We practice every day to improve our soccer skills.","exampleJa":"私たちは毎日練習してサッカーの技術を改善しようとしています。"},{"english":"ability","japanese":"能力","exampleEn":"She has the ability to speak English fluently.","exampleJa":"彼女は英語を流暢に話す能力がある。"},{"english":"cheer","japanese":"応援する","exampleEn":"Let's cheer for our team.","exampleJa":"私たちのチームを応援しよう。"},{"english":"local","japanese":"地元の","exampleEn":"I like to eat local food when I travel.","exampleJa":"旅行の時は地元の食べ物を食べるのが好きです。"}]</script>
 
 <!-- Toast -->
 <div class="toast" id="toast"></div>
